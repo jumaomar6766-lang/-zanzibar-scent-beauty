@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="sw">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zanzibar Scent & Beauty</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fbfaf8;color:#202020}
+header{background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10}.nav{max-width:1100px;margin:auto;padding:13px 16px;display:flex;align-items:center;gap:10px}.brand{font-weight:800;flex:1;font-size:19px}.sub{display:block;font-size:11px;color:#777;font-weight:400;margin-top:3px}
+button,.btn{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}.cart{background:#202020;color:#fff}.hero{max-width:1100px;margin:auto;padding:45px 16px;text-align:center}.hero h1{font-size:38px;margin:8px 0}.hero p{color:#666;line-height:1.5}.cta{display:inline-block;background:#202020;color:white;text-decoration:none;padding:13px 20px;border-radius:11px;margin-top:10px}
+.search{max-width:1100px;margin:auto;padding:0 16px 15px}.search input{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px}.cats{max-width:1100px;margin:auto;padding:0 16px 22px;display:flex;gap:8px;overflow:auto}.cats button{background:#fff;border:1px solid #ddd;white-space:nowrap}.cats .on{background:#202020;color:#fff}
+main section.products{max-width:1100px;margin:auto;padding:0 16px 45px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.card{background:#fff;border:1px solid #eee;border-radius:16px;overflow:hidden}.photo{height:165px;background:linear-gradient(135deg,#eee,#ddd);display:flex;align-items:center;justify-content:center;font-size:58px}.info{padding:14px}.info h3{font-size:16px;margin:0 0 6px}.muted{font-size:13px;color:#777;margin-bottom:10px}.price{font-weight:800}.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.buy{background:#25d366;color:#fff}.details{background:#f2f2f2}.offer{max-width:1100px;margin:0 auto 25px;padding:0 16px}.offerbox{border-radius:16px;background:#eee;padding:20px;text-align:center}.offerbox h2{margin:0 0 5px}
+footer{background:#202020;color:#fff;padding:35px 16px}.foot{max-width:1100px;margin:auto}.small{font-size:13px;color:#bbb}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:30;align-items:center;justify-content:center;padding:18px}.modalbox{background:#fff;border-radius:16px;max-width:430px;width:100%;padding:20px}.close{float:right;background:#eee}.modalbox h2{margin-top:0}.modalbox input,.modalbox textarea{width:100%;padding:12px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}.hero h1{font-size:50px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+<div class="brand">Zanzibar Scent & Beauty<span class="sub">Pafyumu • Vipodozi • Beauty</span></div>
+<button class="cart" onclick="openCart()">🛒 <span id="count">0</span></button>
+<button class="details" onclick="openLogin()">⚙️ Admin</button>
+</div></header>
+<section class="hero">
+<div style="font-size:38px">✨</div><h1>Karibu Zanzibar Scent & Beauty</h1>
+<p>Pafyumu, vipodozi, skincare na sabuni za kuogea — chagua bidhaa zako kwa urahisi.</p>
+<a class="cta" href="https://wa.me/255629305266?text=Habari%20Zanzibar%20Scent%20%26%20Beauty%2C%20naomba%20kuona%20bidhaa." target="_blank">Agiza WhatsApp</a>
+</section>
+<div class="offer"><div class="offerbox"><h2>🛍️ Bidhaa za Urembo</h2><div>Bei ni za kuanzia za rejareja kwa brand/ukubwa ulioonyeshwa; stock na bei zinaweza kubadilika.</div></div></div>
+<div class="search"><input id="q" placeholder="🔍 Tafuta pafyumu, sabuni, lotion..." oninput="render()"></div>
+<div class="cats" id="cats"></div>
+<main><section class="products"><h2>Bidhaa zetu</h2><div class="grid" id="grid"></div></section></main>
+<footer><div class="foot"><h3>Zanzibar Scent & Beauty</h3><p>📱 WhatsApp: <a style="color:#fff" href="https://wa.me/255629305266">0629305266</a></p><p class="small">Delivery na njia za malipo huwekwa na mmiliki kupitia Admin. Bei ya delivery inaweza kutofautiana kwa eneo.</p></div></footer>
+
+
+
+<div class="modal" id="login"><div class="modalbox" style="max-width:380px">
+<button class="close" onclick="closeLogin()">✕</button>
+<h2>🔐 Admin Login</h2>
+<p style="color:#666">Sehemu hii ni ya mmiliki wa duka.</p>
+<input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="Ingiza PIN">
+<button class="buy" style="width:100%" onclick="checkPin()">Ingia</button>
+<p id="pinmsg" style="color:#b00020;font-size:13px"></p>
+</div></div>
+
+<div class="modal" id="admin"><div class="modalbox" style="max-width:520px">
+<button class="close" onclick="closeAdmin()">✕</button>
+<h2>⚙️ Admin — Hariri Duka</h2><button class="details" onclick="closeAdmin()">Toka Admin</button>
+<p class="small" style="color:#666">Badilisha bei, ongeza bidhaa au punguza bei. Mabadiliko yanahifadhiwa kwenye simu hii. PIN ya demo: 2580. Kabla ya kuweka online tutabadilisha iwe login salama ya server.</p>
+<div id="adminList"></div>
+<hr>
+<h3>🚚 Delivery & Malipo</h3>
+<input id="storeDelivery" placeholder="Maelezo ya delivery, mfano: Zanzibar Town TSh 5,000">
+<input id="storePayments" placeholder="Njia za malipo, mfano: Cash / M-Pesa / Airtel Money">
+<button class="details" style="width:100%;margin-bottom:14px" onclick="saveStoreSettings()">Hifadhi mipangilio</button>
+<h3>➕ Ongeza bidhaa</h3>
+<input id="newName" placeholder="Jina la bidhaa">
+<input id="newCat" placeholder="Kundi (mf. Pafyumu)">
+<input id="newPrice" type="number" placeholder="Bei TSh"><input id="newStock" type="number" placeholder="Idadi ya stock" value="1">
+<input id="newIcon" placeholder="Emoji, mfano 🌸">
+<button class="buy" style="width:100%" onclick="addProduct()">Ongeza bidhaa</button>
+</div></div>
+
+<div class="modal" id="modal"><div class="modalbox">
+<button class="close" onclick="closeCart()">✕</button><h2>🛒 Oda yako</h2><div id="cartlist"></div>
+<input id="customer" placeholder="Jina lako"><textarea id="note" rows="3" placeholder="Maelezo ya oda / delivery"></textarea>
+<select id="delivery" style="width:100%;padding:12px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px">
+<option value="Delivery Zanzibar">Delivery Zanzibar</option><option value="Pickup">Nitachukua mwenyewe</option>
+</select>
+<select id="payment" style="width:100%;padding:12px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px">
+<option value="Malipo baada ya kuthibitisha oda">Malipo baada ya kuthibitisha oda</option><option value="Cash">Cash</option><option value="Mobile Money">Mobile Money</option><option value="Bank Transfer">Bank Transfer</option>
+</select>
+<button class="buy" style="width:100%" onclick="sendOrder()">Tuma oda WhatsApp</button>
+</div></div>
+
+<script>
+const defaultItems=[
+["Body Lotion 400–500ml","Body Care","🧴",12000],["Body Wash 200ml","Sabuni","🧼",5000],
+["Body Wash 400ml","Sabuni","🚿",12000],["Body Wash 1L","Sabuni","🧴",18000],
+["Solid Soap 100g","Sabuni","🧼",3000],["Baby Soap","Sabuni","👶",3000],
+["Cleanser","Skincare","🫧",15000],["Face Day Serum 15ml","Skincare","✨",10000],
+["Face Night Serum 15ml","Skincare","🌙",10000],["Face Mask","Skincare","🌿",20000],
+["Seaweed Moisturizer","Skincare","🌊",25000],["Body Scrub","Body Care","✨",38000],
+["Hair Oil 100ml","Hair Care","💆",8000],["Hair Oil 200ml","Hair Care","💆",15000],
+["Hair Food 150g","Hair Care","💇",10000],["Lip Balm","Makeup","💋",15000],
+["Makeup Set","Makeup","💄",30000],["OUD Perfume","Pafyumu","🖤",8000],
+["Perfume Set 3-in-1","Pafyumu","🌸",25000],["Body Oil","Body Care","✨",20000],
+["Coconut Oil","Body Care","🥥",12000],["Beauty Gift Set","Gift Sets","🎁",50000]
+];
+let items=JSON.parse(localStorage.getItem("zsb_products")||"null");
+if(!items) items=defaultItems.map((x,i)=>({id:i,name:x[0],cat:x[1],icon:x[2],price:x[3]}));
+function saveItems(){localStorage.setItem("zsb_products",JSON.stringify(items))}
+let storeSettings=JSON.parse(localStorage.getItem("zsb_settings")||'{"delivery":"Delivery Zanzibar","payments":"Cash / Mobile Money / Bank Transfer"}');
+function saveStoreSettings(){
+ storeSettings.delivery=document.getElementById("storeDelivery").value||storeSettings.delivery;
+ storeSettings.payments=document.getElementById("storePayments").value||storeSettings.payments;
+ localStorage.setItem("zsb_settings",JSON.stringify(storeSettings));
+ alert("Mipangilio imehifadhiwa.");
+}
+let cat="Zote",cart=[];
+const cats=["Zote",...new Set(items.map(x=>x.cat))];
+document.getElementById("cats").innerHTML=cats.map(x=>`<button onclick="setCat('${x}')">${x}</button>`).join("");
+function setCat(x){cat=x;document.querySelectorAll(".cats button").forEach(b=>b.classList.toggle("on",b.textContent===x));render()}
+document.querySelector(".cats button").classList.add("on");
+function render(){let q=document.getElementById("q").value.toLowerCase();let a=items.filter(x=>(cat==="Zote"||x.cat===cat)&&x.name.toLowerCase().includes(q));
+document.getElementById("grid").innerHTML=a.map(x=>`<div class="card"><div class="photo">${x.icon}</div><div class="info"><h3>${x.name}</h3><div class="muted">${x.cat} • Stock: ${x.stock??1}</div><div class="row"><span class="price">TSh ${Number(x.price).toLocaleString()}</span><button class="buy" ${((x.stock??1)<=0)?"disabled":""} onclick="add(${x.id})">${((x.stock??1)<=0)?"Imeisha":"Agiza"}</button></div></div></div>`).join("")}
+function add(id){
+ let x=items.find(x=>x.id===id);
+ if(!x || (x.stock??1)<=0)return;
+ cart.push(x);x.stock=Math.max(0,(x.stock??1)-1);saveItems();
+ document.getElementById("count").textContent=cart.length;render();openCart()
+}
+function openCart(){document.getElementById("modal").style.display="flex";document.getElementById("cartlist").innerHTML=cart.length?cart.map((x,i)=>`<p>${i+1}. ${x.name} — <b>TSh ${x.price}</b></p>`).join(""):"<p>Kikapu kiko tupu.</p>"}
+function closeCart(){document.getElementById("modal").style.display="none"}
+function sendOrder(){if(!cart.length)return;let name=document.getElementById("customer").value||"Mteja";let note=document.getElementById("note").value||"";let delivery=document.getElementById("delivery").value;
+let payment=document.getElementById("payment").value;
+let msg=`Habari Zanzibar Scent & Beauty.%0AJina: ${encodeURIComponent(name)}%0ANataka kuagiza:%0A${cart.map(x=>"- "+encodeURIComponent(x.name)+" — TSh "+x.price).join("%0A")}%0ADelivery: ${encodeURIComponent(delivery)}%0AMalipo: ${encodeURIComponent(payment)}%0A${encodeURIComponent(note)}`;window.open("https://wa.me/255629305266?text="+msg,"_blank")}
+
+
+function openLogin(){document.getElementById("login").style.display="flex";document.getElementById("pin").focus()}
+function closeLogin(){document.getElementById("login").style.display="none";document.getElementById("pin").value=""}
+function checkPin(){
+  // Demo PIN for this prototype. Change before publishing online.
+  const correct="2580";
+  if(document.getElementById("pin").value===correct){
+    closeLogin();openAdmin();
+  } else document.getElementById("pinmsg").textContent="PIN si sahihi.";
+}
+function openAdmin(){
+ document.getElementById("admin").style.display="flex";
+ setTimeout(()=>{document.getElementById("storeDelivery").value=storeSettings.delivery;document.getElementById("storePayments").value=storeSettings.payments},0);
+ renderAdmin();
+}
+function closeAdmin(){document.getElementById("admin").style.display="none"}
+function renderAdmin(){
+ document.getElementById("adminList").innerHTML=items.map(x=>`
+ <div style="border:1px solid #eee;border-radius:12px;padding:10px;margin:8px 0">
+ <b>${x.icon} ${x.name}</b><div class="small">${x.cat}</div>
+ <div style="display:flex;gap:6px;margin-top:8px">
+ <input id="p${x.id}" type="number" value="${x.price}" style="width:120px;padding:9px;border:1px solid #ddd;border-radius:8px">
+ <input id="s${x.id}" type="number" value="${x.stock??1}" style="width:90px;padding:9px;border:1px solid #ddd;border-radius:8px" title="Stock">
+ <button class="details" onclick="changePrice(${x.id},-1000)">−1,000</button>
+ <button class="details" onclick="changePrice(${x.id},1000)">+1,000</button>
+ <button class="buy" onclick="updatePrice(${x.id})">Hifadhi</button>
+ <button style="background:#fee;color:#900" onclick="deleteProduct(${x.id})">Futa</button>
+ </div></div>`).join("");
+}
+function updatePrice(id){
+ let x=items.find(x=>x.id===id),v=Number(document.getElementById("p"+id).value),s=Number(document.getElementById("s"+id).value);
+ if(v>=0&&s>=0){x.price=v;x.stock=s;saveItems();render();renderAdmin()}
+}
+function changePrice(id,delta){let x=items.find(x=>x.id===id);x.price=Math.max(0,Number(x.price)+delta);saveItems();render();renderAdmin()}
+function addProduct(){
+ let name=document.getElementById("newName").value.trim(),catn=document.getElementById("newCat").value.trim()||"Beauty",price=Number(document.getElementById("newPrice").value)||0,icon=document.getElementById("newIcon").value.trim()||"✨";
+ if(!name){alert("Weka jina la bidhaa");return}
+ let stock=Math.max(0,Number(document.getElementById("newStock").value)||0);
+ items.push({id:Date.now(),name,cat:catn,icon,price,stock});saveItems();render();renderAdmin();
+ document.getElementById("newName").value="";document.getElementById("newCat").value="";document.getElementById("newPrice").value="";document.getElementById("newIcon").value="";document.getElementById("newStock").value="1";
+}
+function deleteProduct(id){if(confirm("Ufute bidhaa hii?")){items=items.filter(x=>x.id!==id);saveItems();render();renderAdmin()}}
+
+render();
+</script>
+</body></html>
